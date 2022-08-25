@@ -26,9 +26,8 @@ server.connect( "irc.freenode.org", 6667, "ocfeedbot" )
 msgqueue = []
 
 def feed_refresh():
- FILE = open( old_entries_file, "r" )
- filetext = FILE.read()
- FILE.close()
+ with open( old_entries_file, "r" ) as FILE:
+  filetext = FILE.read()
  for feed in feeds:
   NextFeed = False
   d = feedparser.parse( feed )
@@ -37,14 +36,13 @@ def feed_refresh():
    if id in filetext:
     NextFeed = True
    else:
-    FILE = open( old_entries_file, "a" )
-    FILE.write( id + "\n" )
-    FILE.close()
+    with open( old_entries_file, "a" ) as FILE:
+     FILE.write( id + "\n" )
     msgqueue.append( entry.title.encode('utf-8') + " : " + entry.link.encode('utf-8') )
    if NextFeed:
     break;
 
- t = threading.Timer( 900.0, feed_refresh ) 
+ t = threading.Timer( 900.0, feed_refresh )
  t.start()
 
 for channel in channels:
